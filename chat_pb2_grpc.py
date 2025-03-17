@@ -34,17 +34,29 @@ class ChatServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ChatStream = channel.stream_stream(
+        self.ChatStream = channel.unary_stream(
                 '/chat.ChatService/ChatStream',
-                request_serializer=chat__pb2.ChatMessage.SerializeToString,
+                request_serializer=chat__pb2.Empty.SerializeToString,
                 response_deserializer=chat__pb2.ChatMessage.FromString,
+                _registered_method=True)
+        self.SendMessage = channel.unary_unary(
+                '/chat.ChatService/SendMessage',
+                request_serializer=chat__pb2.ChatMessage.SerializeToString,
+                response_deserializer=chat__pb2.Empty.FromString,
                 _registered_method=True)
 
 
 class ChatServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def ChatStream(self, request_iterator, context):
+    def ChatStream(self, request, context):
+        """stream bidirecional, permite enviar e receber mensagens entre duas pessoas
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SendMessage(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -53,10 +65,15 @@ class ChatServiceServicer(object):
 
 def add_ChatServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ChatStream': grpc.stream_stream_rpc_method_handler(
+            'ChatStream': grpc.unary_stream_rpc_method_handler(
                     servicer.ChatStream,
-                    request_deserializer=chat__pb2.ChatMessage.FromString,
+                    request_deserializer=chat__pb2.Empty.FromString,
                     response_serializer=chat__pb2.ChatMessage.SerializeToString,
+            ),
+            'SendMessage': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendMessage,
+                    request_deserializer=chat__pb2.ChatMessage.FromString,
+                    response_serializer=chat__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -70,7 +87,7 @@ class ChatService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def ChatStream(request_iterator,
+    def ChatStream(request,
             target,
             options=(),
             channel_credentials=None,
@@ -80,12 +97,39 @@ class ChatService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(
-            request_iterator,
+        return grpc.experimental.unary_stream(
+            request,
             target,
             '/chat.ChatService/ChatStream',
-            chat__pb2.ChatMessage.SerializeToString,
+            chat__pb2.Empty.SerializeToString,
             chat__pb2.ChatMessage.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SendMessage(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/chat.ChatService/SendMessage',
+            chat__pb2.ChatMessage.SerializeToString,
+            chat__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,
