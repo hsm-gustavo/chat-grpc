@@ -80,3 +80,7 @@ CHAT-GRPC/
 - **Protobuf** – Serialização de dados e definição de serviços
 
 ---
+
+## 📜 Licença
+
+Este projeto eestá licenciado sob a licença MIT. Para mais detalhes, consulte o arquivo [LICENSE](https://github.com/hsm-gustavo/chat-grpc/blob/main/LICENSE) no repositório.
