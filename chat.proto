@@ -3,10 +3,15 @@ syntax = "proto3";
 package chat;
 
 service ChatService {
-    rpc ChatStream (stream ChatMessage) returns (stream ChatMessage);
+    // stream bidirecional, permite enviar e receber mensagens entre duas pessoas
+    rpc ChatStream (Empty) returns (stream ChatMessage);
+    rpc SendMessage (ChatMessage) returns (Empty);
 }
 
+message Empty {}
+
 message ChatMessage {
-    string message = 1;
+    string name = 1;
+    string message = 2;
 }
 
